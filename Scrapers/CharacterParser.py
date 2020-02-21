@@ -1,0 +1,2 @@
+class CharacterParser:
+  pass
