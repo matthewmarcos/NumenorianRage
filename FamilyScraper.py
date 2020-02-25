@@ -19,19 +19,6 @@ class FamilyScraper(Spider):
         for url in self.start_urls:
             yield Request(url=url, callback=self.parse, meta={'depth': 1})
 
-    def get_main_table(self, tables_selector):
-        tables = [(table_selector, len(table_selector.css('tr').getall()))
-                  for table_selector in tables_selector]
-
-        # This is not perfect. Doesn't matter, we got all the Numenorian Kings
-        #  and members of the royal bloodline
-        if(len(tables_selector) < 5):
-            return tables_selector[0]
-
-        # We know for certain that the main table is the largest of the
-        # first 2 tables. Plz not dispute. This was a shot in the dark
-        return max(tables[:2], key=itemgetter(1))[0]
-
     def parse(self, response):
         BASE_URL = 'http://tolkiengateway.net'
         table_selector = '#mainContent table'
@@ -121,6 +108,19 @@ class FamilyScraper(Spider):
                 [child_link.attrib['href']
                     for child_link in self.extract_children(value_col)])
         return profile
+
+    def get_main_table(self, tables_selector):
+        tables = [(table_selector, len(table_selector.css('tr').getall()))
+                  for table_selector in tables_selector]
+
+        # Doesn't matter, we got all the Numenorian Kings
+        # and members of the royal bloodline
+        if(len(tables_selector) < 5):
+            return tables_selector[0]
+
+        # We know for certain that the main table is the largest of the
+        # first 2 tables. Plz not dispute. This was a shot in the dark
+        return max(tables[:2], key=itemgetter(1))[0]
 
     def extract_other_names(self, selector):
         return selector.css('::text').get()
