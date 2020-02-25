@@ -2,4 +2,6 @@
 __pycache__
 .vscode
 .ropeproject
-*.txt
+*.txt__pycache__
+kings.txt
+*.psv
