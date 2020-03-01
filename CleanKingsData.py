@@ -80,7 +80,7 @@ def transform_king_data(king):
     return king
 
 
-def get_king_data():
+def get_numenorian():
     with open(INPUT_FILENAME, 'r') as fp:
         reader = csv.reader(fp, delimiter='|')
         for row in reader:
@@ -97,7 +97,7 @@ def save_profile(profile):
 
 
 def main():
-    for king in get_king_data():
+    for king in get_numenorian():
         # Drop non-kings. Analysis for other Numenorians will be done later.
         if(king['titles'] == ''):
             continue

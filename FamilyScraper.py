@@ -1,6 +1,6 @@
+from csv import DictWriter
 from operator import itemgetter
 from scrapy import Request, Spider
-from csv import DictWriter
 import re
 import unicodedata
 
@@ -84,41 +84,34 @@ class FamilyScraper(Spider):
     def extract_row_value(self, profile, td_list, key):
         value_col = td_list.css('td:nth-child(2)')
 
-        if key == "other_names":
+        if key in set([
+            "titles",
+            "notable_for",
+            "other_names"
+        ]):
             profile[key] = (
-                self.extract_other_names(value_col))
+                self.extract_text(value_col))
 
-        elif key == "titles":
+        elif key in set([
+            "birth_year",
+            "rule_start",
+            "death_year"
+        ]):
             profile[key] = (
-                self.extract_titles(value_col))
-
-        elif key == "birth_year":
-            profile[key] = (
-                self.extract_birth_year(value_col))
-
-        elif key == "rule_start":
-            profile[key] = (
-                self.extract_rule_start(value_col))
-
-        elif key == "death_year":
-            profile[key] = (
-                self.extract_death_year(value_col))
-
-        elif key == "notable_for":
-            profile[key] = (
-                self.extract_notable_for(value_col))
+                self.extract_date(value_col))
 
         elif key == "children":
             profile[key] = (
                 [child_link.attrib['href']
                     for child_link in self.extract_children(value_col)])
+
         return profile
 
     def get_main_table(self, tables_selector):
         tables = [(table_selector, len(table_selector.css('tr').getall()))
                   for table_selector in tables_selector]
 
-        # Weird pattern I found on the pages. We got all the Numenorian Kings
+        # Weird pattern I found on the pages. We got the Numenorian Kings
         # and members of the royal bloodline
         if(len(tables_selector) < 5):
             return tables_selector[0]
@@ -127,26 +120,15 @@ class FamilyScraper(Spider):
         # first 2 tables.
         return max(tables[:2], key=itemgetter(1))[0]
 
-    def extract_other_names(self, selector):
+    def extract_text(self, selector):
         return selector.css('::text').get()
 
-    def extract_titles(self, selector):
-        return selector.css('::text').get()
-
-    def extract_birth_year(self, selector):
+    def extract_date(self, selector):
         birth_string = ''.join(selector.css('::text').getall())
         return re.split(r"  ", birth_string)[0]
 
-    def extract_rule_start(self, selector):
-        birth_string = ''.join(selector.css('::text').getall())
-        return re.split(r"  ", birth_string)[0]
-
-    def extract_death_year(self, selector):
-        birth_string = ''.join(selector.css('::text').getall())
-        return re.split(r"  ", birth_string)[0]
-
-    def extract_notable_for(self, selector):
-        return selector.css('::text').get()
+    # def extract_notable_for(self, selector):
+    #     return selector.css('::text').get()
 
     def extract_children(self, selector):
         return selector.css('td>a')
