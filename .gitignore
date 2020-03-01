@@ -2,6 +2,6 @@
 __pycache__
 .vscode
 .ropeproject
-*.txt__pycache__
-kings.txt
+*.txt
 *.psv
+.ipynb_checkpoints

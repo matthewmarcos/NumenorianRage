@@ -6,8 +6,13 @@ import unicodedata
 
 
 class FamilyScraper(Spider):
+    """ Scrapes
+        Scrapes information about each member of the Numenorian Royal
+        Family Tree
+    """
+
     name = 'numenorian_kings_scraper'
-    output_file = 'kings.psv'
+    output_file = 'numenorians.psv'
     start_urls = [
         # Numenorian Kings
         'http://tolkiengateway.net/wiki/Elros',
@@ -83,27 +88,27 @@ class FamilyScraper(Spider):
             profile[key] = (
                 self.extract_other_names(value_col))
 
-        if key == "titles":
+        elif key == "titles":
             profile[key] = (
                 self.extract_titles(value_col))
 
-        if key == "birth_year":
+        elif key == "birth_year":
             profile[key] = (
                 self.extract_birth_year(value_col))
 
-        if key == "rule_start":
+        elif key == "rule_start":
             profile[key] = (
                 self.extract_rule_start(value_col))
 
-        if key == "death_year":
+        elif key == "death_year":
             profile[key] = (
                 self.extract_death_year(value_col))
 
-        if key == "notable_for":
+        elif key == "notable_for":
             profile[key] = (
                 self.extract_notable_for(value_col))
 
-        if key == "children":
+        elif key == "children":
             profile[key] = (
                 [child_link.attrib['href']
                     for child_link in self.extract_children(value_col)])
@@ -113,13 +118,13 @@ class FamilyScraper(Spider):
         tables = [(table_selector, len(table_selector.css('tr').getall()))
                   for table_selector in tables_selector]
 
-        # Doesn't matter, we got all the Numenorian Kings
+        # Weird pattern I found on the pages. We got all the Numenorian Kings
         # and members of the royal bloodline
         if(len(tables_selector) < 5):
             return tables_selector[0]
 
         # We know for certain that the main table is the largest of the
-        # first 2 tables. Plz not dispute. This was a shot in the dark
+        # first 2 tables.
         return max(tables[:2], key=itemgetter(1))[0]
 
     def extract_other_names(self, selector):
