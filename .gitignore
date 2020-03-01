@@ -3,3 +3,5 @@ __pycache__
 .vscode
 .ropeproject
 *.txt
+*.psv
+.ipynb_checkpoints
